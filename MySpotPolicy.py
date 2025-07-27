@@ -59,7 +59,6 @@ class SpotFlatTerrainPolicy(PolicyController):
         self._previous_action = np.zeros(12)
         self._policy_counter = 0
         self._decimation = 10  # Decimation factor for policy updates
-        
         # Access the articulation controller to modify joint properties
         self.ctr = self.robot.get_articulation_controller()
         

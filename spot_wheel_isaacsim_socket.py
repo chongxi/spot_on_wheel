@@ -291,6 +291,21 @@ class SpotContactController:
                 "angular": angular_velocity.tolist()
             }
             
+            # Add action data from the policy
+            if hasattr(self._spot, 'action') and self._spot.action is not None:
+                robot_state["action"] = {
+                    "raw": self._spot.action.tolist(),  # Raw action from policy
+                    "scaled": self._spot._current_action.tolist() if hasattr(self._spot, '_current_action') else [],  # Scaled action applied
+                    "command": scaled_command.tolist(),  # User command
+                 }          
+            else:
+                robot_state["action"] = {
+                    "raw": [0.0] * 12,
+                    "scaled": [0.0] * 12,
+                    "command": scaled_command.tolist(),
+                    "is_new": False
+                }
+            
             # Broadcast robot state via socket
             self.broadcaster.send_robot_state(robot_state)
             
@@ -352,7 +367,7 @@ class SpotContactController:
 def main():
     """Main function"""
     physics_dt = 1 / 200.0
-    render_dt = 1 / 200.0
+    render_dt = 1 / 60.0
     
     controller = SpotContactController(physics_dt=physics_dt, render_dt=render_dt)
     controller.setup()
